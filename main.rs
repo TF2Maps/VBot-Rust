@@ -7,38 +7,39 @@
 
 // This is the main function
 
+mod Bot;
 mod map_datatypes;
-mod StorageAdapter;
-mod ConsoleImplementations;
-mod bot;
-mod UserHandler;
-mod service;
+mod Message_Handle_Responses;
 
 
-use map_datatypes::User;
-use map_datatypes::Source;
-use map_datatypes::Destination;
-use map_datatypes::Map;
+mod Service_Adapter;
+mod Storage_Adapter;
 
-use StorageAdapter::Storage_Adapter;
-use service::Service;
-use service::Tick_Outcome;
 
-use ConsoleImplementations::Console_Bot;
+mod Test_Bot;
+mod Console_Storage_Adapter;
+mod Console_Service_Adapter;
+
+use Service_Adapter::Tick_Outcome;
+use Console_Service_Adapter::Get_Console_Service_Adapter;
 
 fn main() {
-    // The statements here will be executed when the compiled binary is called
 
-    let TestBot: Console_Bot = Console_Bot;
-
+    
+    let Console_Service = Get_Console_Service_Adapter();
+    
+    
     loop {
-        let action: Tick_Outcome = TestBot.OnTick();
+        let tick: fn () -> Tick_Outcome = Console_Service.On_Tick;
+        let action: Tick_Outcome = tick();
+        
         match action {
             Tick_Outcome::DoNothing => println!("Doing Nothing"),
             Tick_Outcome::Received_Public_Message(source,msg) => println!("{0} said: {1}",source.sender.id.to_string(), msg),
             Tick_Outcome::Received_Private_Message(user,msg) => println!("{0} said: {1}",user.id.to_string(), msg)
         }
     }
-    // Print text to the console
+    
     println!("Hello World!");
+
 }
