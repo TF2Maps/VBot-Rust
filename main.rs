@@ -25,13 +25,10 @@ use Console_Service_Adapter::Get_Console_Service_Adapter;
 
 fn main() {
 
-    
     let Console_Service = Get_Console_Service_Adapter();
     
-    
     loop {
-        let tick: fn () -> Tick_Outcome = Console_Service.On_Tick;
-        let action: Tick_Outcome = tick();
+        let action: Tick_Outcome = (Console_Service.On_Tick)();
         
         match action {
             Tick_Outcome::DoNothing => println!("Doing Nothing"),
