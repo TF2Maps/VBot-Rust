@@ -10,15 +10,22 @@
 use map_datatypes::User;
 use map_datatypes::Source;
 use map_datatypes::Destination;
+use map_datatypes::Map;
 
-use StorageAdapter::Storage_Adapter;
-use UserHandler::UserHandler;
+use Message_Handle_Responses::Message_Handle_Responses;
+use Storage_Adapter::Storage_Adapter;
 
-use service::Service;
+struct Bot {
+    Commands: Vec<fn( msg: String, sender: Source) -> (Message_Handle_Responses)>,
+    TickFunctions: Vec<fn() -> (Tick_Outcome)>,    
+    StorageFunctions: Storage_Adapter
+}
 
-
-
-
+pub enum Tick_Outcome {
+    DoNothing,
+    Received_Public_Message(Source, String),
+    Received_Private_Message(User, String)
+}
 
 
 
