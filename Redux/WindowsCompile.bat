@@ -1,0 +1,2 @@
+rustc main.rs
+PAUSE

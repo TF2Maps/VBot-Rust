@@ -15,10 +15,10 @@ use map_datatypes::Map;
 use Message_Handle_Responses::Message_Handle_Responses;
 use Storage_Adapter::Storage_Adapter;
 
-struct Bot {
-    Commands: Vec<fn( msg: String, sender: Source) -> (Message_Handle_Responses)>,
-    TickFunctions: Vec<fn() -> (Tick_Outcome)>,    
-    StorageFunctions: Storage_Adapter
+pub struct Bot {
+    pub Commands: Vec<fn( msg: String, sender: Source) -> (Message_Handle_Responses)>,
+    pub TickFunctions: Vec<fn() -> (Tick_Outcome)>,    
+    pub StorageFunctions: Storage_Adapter
 }
 
 pub enum Tick_Outcome {

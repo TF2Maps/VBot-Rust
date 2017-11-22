@@ -1,5 +1,5 @@
 use map_datatypes;
-use bot;
+use Bot;
 
 use Storage_Adapter::Storage_outcome;
 use Storage_Adapter::Storage_Adapter;
