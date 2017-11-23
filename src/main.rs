@@ -27,11 +27,16 @@ use Service_Adapter::Service;
 
 use std::rc;
 
+mod Discord_Service_Adapter;
+use Discord_Service_Adapter::Discord_Service;
+
 fn main() {
 
     let Console: Console_Service = Console_Service{};
+    let Discord: Discord_Service = Discord_Service{};
     let console_storage: Console_Storage_Adapter::Console_Storage_Adapter = Console_Storage_Adapter::Console_Storage_Adapter{};
-    
+    Discord_Service.Send_Public_Message("Hello World".to_string(), "https://discordapp.com/api/v6/webhooks/383110817588969483/9wGJStlHexwVlAylJTys9j_nE1syFNv7K7eFyja8dtAaMpUpHzwB-yYKI4J7aYC14BOS".to_string());
+
 
     let testbot: Bot::Bot = Test_Bot::Get_Test_Bot();
     
@@ -49,6 +54,7 @@ fn main() {
 
     
     loop {
+        Discord.On_Tick();
         let action: Tick_Outcome = Console.On_Tick();
         
         match action {

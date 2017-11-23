@@ -4,4 +4,4 @@ version = "0.1.0"
 authors = ["Fantasmos <benji.k@live.com.au>"]
 
 [dependencies]
-hyper = "0.11"
+reqwest = "0.8.1"
