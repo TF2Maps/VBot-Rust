@@ -2,12 +2,12 @@ use map_datatypes::User;
 use map_datatypes::Source;
 use map_datatypes::Destination;
 use map_datatypes::Map;
-
-pub struct Service {
-    pub Send_Private_Message: fn ( message: String, desination_user_id: String )-> Activity_Outcome,
-    pub Send_Public_Message: fn (message: String, desination_chatroom_id: String ) -> Activity_Outcome,
-    pub Login: fn() -> Activity_Outcome,
-    pub On_Tick: fn() -> Tick_Outcome
+ 
+pub trait Service {
+    fn Send_Private_Message(&self, message: String, desination_user_id: String ) -> Activity_Outcome;
+    fn Send_Public_Message(&self, message: String, desination_chatroom_id: String ) -> Activity_Outcome;
+    fn Login(&self) -> Activity_Outcome;
+    fn On_Tick(&self) -> Tick_Outcome;
 }
 
 pub enum Tick_Outcome {

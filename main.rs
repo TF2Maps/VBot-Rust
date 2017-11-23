@@ -20,15 +20,16 @@ mod Test_Bot;
 mod Console_Storage_Adapter;
 mod Console_Service_Adapter;
 
+use Console_Service_Adapter::Console_Service;
 use Service_Adapter::Tick_Outcome;
-use Console_Service_Adapter::Get_Console_Service_Adapter;
+use Service_Adapter::Service;
 
 fn main() {
 
-    let Console_Service = Get_Console_Service_Adapter();
+    let Console: Console_Service = Console_Service{};
     
     loop {
-        let action: Tick_Outcome = (Console_Service.On_Tick)();
+        let action: Tick_Outcome = Console.On_Tick();
         
         match action {
             Tick_Outcome::DoNothing => println!("Doing Nothing"),
