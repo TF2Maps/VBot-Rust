@@ -4,11 +4,11 @@ use map_datatypes::Destination;
 use map_datatypes::Map;
 
 //Class used to Group relevant Storage Functions together 
-pub struct Storage_Adapter {
-    pub Store_Map: fn(map_to_add: Map, sender: Source) -> Storage_outcome,
-    pub Store_Source: fn(entity: Source) -> Storage_outcome,
-    pub get_map_by_regex: fn(regex: String) -> (Storage_outcome, Map),
-    pub get_source_by_regex: fn(regex: String) -> (Storage_outcome, Source), 
+pub trait Storage_Adapter {
+    fn Store_Map(&self,map_to_add: Map, sender: Source) -> Storage_outcome;
+    fn Store_Source(&self,entity: Source) -> Storage_outcome;
+    fn get_map_by_regex(&self,regex: String) -> (Storage_outcome, Map);
+    fn get_source_by_regex(&self,regex: String) -> (Storage_outcome, Source); 
 }
 
 pub enum Storage_outcome {
