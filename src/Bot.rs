@@ -16,7 +16,7 @@ use Message_Handle_Responses::Message_Handle_Responses;
 use Storage_Adapter::Storage_Adapter;
 
 pub struct Bot {
-    pub Commands: Vec<fn( msg: String, sender: Source) -> (Message_Handle_Responses)>,
+    pub Commands: Vec<fn( msg: String, user: Source) -> (Message_Handle_Responses)>,
     pub TickFunctions: Vec<fn() -> (Tick_Outcome)>,    
     pub StorageFunctions: Box<Storage_Adapter>
 }

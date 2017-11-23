@@ -1,0 +1,8 @@
+\s+(\S*)\s+ Split Each word  -> Parse Command and MapName
+
+((?:http)[^\s]*){1} //Get first HTTP://. Need to use /i -> Parse URL
+
+(?:(?:(?:(?:http)[^\s]*))(.*)) Get everything after http:// (Group 1) -> Parse Notes
+
+
+
