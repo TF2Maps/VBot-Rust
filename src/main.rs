@@ -20,15 +20,36 @@ mod Test_Bot;
 mod Console_Storage_Adapter;
 mod Console_Service_Adapter;
 
+use Console_Service_Adapter::Console_Service;
+
 use Service_Adapter::Tick_Outcome;
-use Console_Service_Adapter::Get_Console_Service_Adapter;
+use Service_Adapter::Service;
+
+use std::rc;
 
 fn main() {
 
-    let Console_Service = Get_Console_Service_Adapter();
+    let Console: Console_Service = Console_Service{};
+    let console_storage: Console_Storage_Adapter::Console_Storage_Adapter = Console_Storage_Adapter::Console_Storage_Adapter{};
+    
+
+    let testbot: Bot::Bot = Test_Bot::Get_Test_Bot();
+    
+    let Test_Bot_2: Bot::Bot = Bot::Bot {
+        Commands: Vec::new(),
+        TickFunctions: Vec::new(),    
+        StorageFunctions: Box::new(console_storage)
+    };
+
+    let Test_Bot_3: Bot::Bot = Bot::Bot {
+        Commands: Vec::new(),
+        TickFunctions: Vec::new(),    
+        StorageFunctions: Box::new(console_storage)
+    };
+
     
     loop {
-        let action: Tick_Outcome = (Console_Service.On_Tick)();
+        let action: Tick_Outcome = Console.On_Tick();
         
         match action {
             Tick_Outcome::DoNothing => println!("Doing Nothing"),
