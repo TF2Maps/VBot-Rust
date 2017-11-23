@@ -11,9 +11,14 @@ use map_datatypes::Source;
 use map_datatypes::Destination;
 use map_datatypes::Map;
 
+
 use std::io;
 use std::io::BufRead;
-pub struct Console_Storage_Adapter;
+
+#[derive(Debug,Copy, Clone)]
+pub struct Console_Storage_Adapter 
+{
+}
 
 impl Storage_Adapter for Console_Storage_Adapter
 {

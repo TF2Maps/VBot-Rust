@@ -4,6 +4,7 @@ use map_datatypes::Destination;
 use map_datatypes::Map;
 
 //Class used to Group relevant Storage Functions together 
+
 pub trait Storage_Adapter {
     fn Store_Map(&self,map_to_add: Map, sender: Source) -> Storage_outcome;
     fn Store_Source(&self,entity: Source) -> Storage_outcome;

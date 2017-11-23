@@ -21,12 +21,32 @@ mod Console_Storage_Adapter;
 mod Console_Service_Adapter;
 
 use Console_Service_Adapter::Console_Service;
+
 use Service_Adapter::Tick_Outcome;
 use Service_Adapter::Service;
+
+use std::rc;
 
 fn main() {
 
     let Console: Console_Service = Console_Service{};
+    let console_storage: Console_Storage_Adapter::Console_Storage_Adapter = Console_Storage_Adapter::Console_Storage_Adapter{};
+    
+
+    let testbot: Bot::Bot = Test_Bot::Get_Test_Bot();
+    
+    let Test_Bot_2: Bot::Bot = Bot::Bot {
+        Commands: Vec::new(),
+        TickFunctions: Vec::new(),    
+        StorageFunctions: Box::new(console_storage)
+    };
+
+    let Test_Bot_3: Bot::Bot = Bot::Bot {
+        Commands: Vec::new(),
+        TickFunctions: Vec::new(),    
+        StorageFunctions: Box::new(console_storage)
+    };
+
     
     loop {
         let action: Tick_Outcome = Console.On_Tick();
