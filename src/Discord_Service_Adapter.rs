@@ -19,21 +19,17 @@ pub struct Discord_Service;
 
 impl Service for Discord_Service 
 {
-    fn Send_Private_Message(&self, message: String, desination_user_id: String )-> Activity_Outcome {
-        println!("Sending: {0} to {1}", message, desination_user_id);
-        return Activity_Outcome::success;
-    }
     
-    fn Send_Public_Message(&self, message: String, desination_chatroom_id: String ) -> Activity_Outcome {
-        let params = [("content", "Hello World")];
+    fn Send_Public_Message(&self, message: String, desination: String ) -> Activity_Outcome {
+        let params = [("content", &message)];
         
         let client = reqwest::Client::new();
-        let res = client.post("URL GOES HERE")
+        let res = client.post(&desination)
         .form(&params)
         .send().expect("Failed to Post Message");
 
 
-        println!("Sending: {0} to {1}", message, desination_chatroom_id);
+        println!("Sending: {0} to {1}", message, desination);
         return Activity_Outcome::success;
     }
     fn Login (&self) -> Activity_Outcome {

@@ -14,12 +14,8 @@ pub struct Console_Service;
 
 impl Service for Console_Service 
 {
-    fn Send_Private_Message(&self, message: String, desination_user_id: String )-> Activity_Outcome {
-        println!("Sending: {0} to {1}", message, desination_user_id);
-        return Activity_Outcome::success;
-    }
-    fn Send_Public_Message(&self, message: String, desination_chatroom_id: String ) -> Activity_Outcome {
-        println!("Sending: {0} to {1}", message, desination_chatroom_id);
+    fn Send_Public_Message(&self, message: String, desination: String ) -> Activity_Outcome {
+        println!("Sending: {0} to {1}", message, desination);
         return Activity_Outcome::success;
     }
     fn Login (&self) -> Activity_Outcome {
@@ -34,6 +30,12 @@ impl Service for Console_Service
             display_name: "Console_Dummy".to_string() 
         };
 
+        let TestSource: Source = Source {
+            sender: TestUser,
+            chatroom: "Test Room".to_string(),
+            elevated_perms: true
+        };
+
         let stdin = io::stdin();
         let mut Message: String = "".to_string();
             
@@ -42,6 +44,6 @@ impl Service for Console_Service
             break;
         }
             
-        return Tick_Outcome::Received_Private_Message(TestUser, Message);
+        return Tick_Outcome::Received_Public_Message(TestSource, Message);
     }
 }

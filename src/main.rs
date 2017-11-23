@@ -35,7 +35,7 @@ fn main() {
     let Console: Console_Service = Console_Service{};
     let Discord: Discord_Service = Discord_Service{};
     let console_storage: Console_Storage_Adapter::Console_Storage_Adapter = Console_Storage_Adapter::Console_Storage_Adapter{};
-    Discord_Service.Send_Public_Message("Hello World".to_string(), "https://discordapp.com/api/v6/webhooks/383110817588969483/9wGJStlHexwVlAylJTys9j_nE1syFNv7K7eFyja8dtAaMpUpHzwB-yYKI4J7aYC14BOS".to_string());
+    Discord_Service.Send_Public_Message("Hello World".to_string(), "".to_string());
 
 
     let testbot: Bot::Bot = Test_Bot::Get_Test_Bot();
@@ -59,8 +59,7 @@ fn main() {
         
         match action {
             Tick_Outcome::DoNothing => println!("Doing Nothing"),
-            Tick_Outcome::Received_Public_Message(source,msg) => println!("{0} said: {1}",source.sender.id.to_string(), msg),
-            Tick_Outcome::Received_Private_Message(user,msg) => println!("{0} said: {1}",user.id.to_string(), msg)
+            Tick_Outcome::Received_Public_Message(source,msg) => println!("{0} said: {1}",source.sender.id.to_string(), msg)
         }
     }
     

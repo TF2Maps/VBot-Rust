@@ -9,11 +9,6 @@ use std::rc;
 use std::cell::RefCell;
 
 pub fn Get_Test_Bot() -> Bot {
-    
-   
-
-   
-
     let console_storage: Console_Storage_Adapter = Console_Storage_Adapter{
     };
     
