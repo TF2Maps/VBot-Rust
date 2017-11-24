@@ -29,9 +29,16 @@ use std::rc;
 
 mod Discord_Service_Adapter;
 use Discord_Service_Adapter::Discord_Service;
+mod map_commands;
 
+use map_commands::ParseMap;
+
+extern crate regex;
 fn main() {
+    ParseMap("!add mapname http://url Hello World".to_string());
 
+    ParseMap("!add     mapname   http://url    Hello World".to_string());
+     ParseMap("!add     mapname Hello World".to_string());
     let Console: Console_Service = Console_Service{};
     let Discord: Discord_Service = Discord_Service{};
     let console_storage: Console_Storage_Adapter::Console_Storage_Adapter = Console_Storage_Adapter::Console_Storage_Adapter{};
