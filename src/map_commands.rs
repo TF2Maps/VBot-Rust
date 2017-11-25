@@ -4,7 +4,7 @@ use map_datatypes::Map;
 use regex::Regex;
 
 pub fn ParseMap (Message: String ) {
-    let MapRegex = Regex::new(r"(^.\S*)(?:(?:\s*)(\S*)(?:\s*))((?:(?:http)\S*)|\b)(?:\s*)(.*)").unwrap();
+    let MapRegex = Regex::new(r"(?:(^!add|^!delete)|^!update\s*(\S*))(?:(?:\s*)(\S*)(?:\s*))((?:(?:http)\S*)|\b)(?:\s*)(.*)").unwrap();
     
     let cap = MapRegex.captures(&Message).unwrap();
 
