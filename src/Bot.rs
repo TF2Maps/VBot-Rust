@@ -2,7 +2,7 @@ use datatypes::user;
 use datatypes::source;
 use datatypes::destination;
 use datatypes::map;
-
+use service::tick_outcome;
 use storage::storage;
 
 pub struct bot {

@@ -1,26 +1,20 @@
-use datatypes;
-use Bot;
 
 use storage::storage_event_outcome;
 use storage::storage;
 
-use Message_Handle_Responses;
 
 use datatypes::user;
 use datatypes::source;
-use datatypes::destination;
 use datatypes::map;
 
 
-use std::io;
-use std::io::BufRead;
 
 #[derive(Debug,Copy, Clone)]
-pub struct Console_storage 
+pub struct storage_debugger 
 {
 }
 
-impl storage for Console_storage
+impl storage for storage_debugger
 {
     fn store_map(&self, map_to_add: map, sender: source) -> storage_event_outcome {
         println!("Storing map");

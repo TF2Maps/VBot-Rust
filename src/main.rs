@@ -9,29 +9,25 @@
 
 mod Bot;
 mod datatypes;
-mod Message_Handle_Responses;
 
 
 mod service;
 mod storage;
 
 
-mod test_Bot;
 mod storage_debugger;
-mod service_console_Adapter;
+mod service_console;
 
-use service_console_Adapter::service_console;
 
 use service::tick_outcome;
-use service::service;
 
 use std::rc;
 
-mod service_discord_Adapter;
-use service_discord_Adapter::service_discord;
+mod service_discord;
 mod command_map;
 
 use command_map::parse_map;
+use service::service;
 
 extern crate regex;
 fn main() {
@@ -40,12 +36,12 @@ fn main() {
     parse_map("!add     mapname   http://url    Hello World".to_string());
     parse_map("!add     mapname Hello World".to_string());
     
-	let console: service_console = service_console{};
-    let discord: service_discord = service_discord{};
+	let console: service_console::service_console = service_console::service_console{};
+    let discord: service_discord::service_discord = service_discord::service_discord{};
     
 	let console_storage: storage_debugger::storage_debugger = storage_debugger::storage_debugger{};
     
-	service_discord.send_message("Hello World".to_string(), "".to_string());
+	discord.send_message("Hello World".to_string(), "".to_string());
     
     loop {
         discord.tick();
