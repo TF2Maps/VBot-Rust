@@ -1,4 +1,4 @@
-\s+(\S*)\s+ Split Each word  -> Parse Command and MapName
+\s+(\S*)\s+ Split Each word  -> Parse Command and mapName
 
 ((?:http)[^\s]*){1} //Get first HTTP://. Need to use /i -> Parse URL
 
