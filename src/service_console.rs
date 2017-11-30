@@ -3,28 +3,26 @@ use datatypes::source;
 use datatypes::destination;
 use datatypes::map;
 
-use service::service;
+use service::services;
 use service::tick_outcome;
 use service::activity_outcome;
  
 use std::io;
 use std::io::BufRead;
 
-pub struct service_console {
-    
-}
+pub struct service_console;
 
-impl service for service_console 
+impl services for service_console 
 {
-    fn send_message(&self, message: String, desination: String ) -> activity_outcome {
+    fn send_message(message: String, desination: String ) -> activity_outcome {
         println!("Sending: {0} to {1}", message, desination);
         return activity_outcome::success;
     }
-    fn initialise (&self) -> activity_outcome {
+    fn initialise () -> activity_outcome {
         println!("Initialising console service");
         return activity_outcome::success;
     }
-    fn tick(&self) -> tick_outcome {
+    fn tick() -> tick_outcome {
         let stdin = io::stdin();
 		
         let mut Message: String = "".to_string();

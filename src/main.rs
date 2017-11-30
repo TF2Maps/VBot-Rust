@@ -12,39 +12,49 @@ mod datatypes;
 
 
 mod service;
+use service::services;
 mod storage;
 
 
 mod storage_debugger;
-mod service_console;
+
 
 
 use service::tick_outcome;
 
-use std::rc;
+mod service_console;
+
+
 
 mod service_discord;
 mod command_map;
 
 use command_map::parse_map;
 
+use datatypes::user;
+
+
 extern crate regex;
 fn main() {
+    let sender = user {
+                    id: "01".to_string(),  
+                    application: "Discord".to_string(), 
+                    display_name: "test_ user".to_string() 
+                };
 
-    parse_map("!add mapname http://url Hello World".to_string());
-    parse_map("!add     mapname   http://url    Hello World".to_string());
-    parse_map("!add     mapname Hello World".to_string());
+    parse_map("!add oldmap http://url    Hello World".to_string(), sender);
     
-	let console: service_console::service_console = service_console::service_console{};
-    let discord: service_discord::service_discord = service_discord::service_discord{};
+	let console: service_console::service_console = service_console::service_console;
+    let discord: service_discord::service_discord = service_discord::service_discord;
     
 	let console_storage: storage_debugger::storage_debugger = storage_debugger::storage_debugger{};
     
-	discord.send_message("Hello World".to_string(), "".to_string());
+    service_discord::service_discord::send_message("Hello World".to_string(), "".to_string());
+	
     
     loop {
-        discord.tick();
-        let action: tick_outcome = console.tick();
+        
+        let action: tick_outcome = service_console::service_console::tick();
         
         match action {
             tick_outcome::nothing => println!("Doing Nothing"),
