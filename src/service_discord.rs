@@ -14,7 +14,9 @@ extern crate reqwest;
 
 use std::io::Read;
 
-pub struct service_discord;
+pub struct service_discord {
+
+}
 
 impl service for service_discord
 {

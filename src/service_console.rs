@@ -10,7 +10,9 @@ use service::activity_outcome;
 use std::io;
 use std::io::BufRead;
 
-pub struct service_console;
+pub struct service_console {
+    
+}
 
 impl service for service_console 
 {
@@ -31,7 +33,17 @@ impl service for service_console
             Message.push_str(&line.unwrap());
             break;
         }
-            
-        return tick_outcome::message_received(testsource, Message);
+
+        let test_source: source = source {
+            sender: user {
+                    id: "01".to_string(),  
+                    application: "Discord".to_string(), 
+                    display_name: "test_ user".to_string() 
+                },
+            chatroom: ("Test room").to_string(),
+            elevated_perms: false
+        };
+      
+        return tick_outcome::message_received(test_source, Message);
     }
 }

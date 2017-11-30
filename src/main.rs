@@ -27,7 +27,6 @@ mod service_discord;
 mod command_map;
 
 use command_map::parse_map;
-use service::service;
 
 extern crate regex;
 fn main() {
