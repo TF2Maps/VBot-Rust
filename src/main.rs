@@ -18,24 +18,14 @@ use storage::storable;
 use storage::storage_utility;
 
 mod storage_debugger;
-
-
-
 use service::tick_outcome;
-
 mod service_console;
-
-
-
 mod service_discord;
 mod command_map;
-
 use command_map::parse_map;
-
 use datatypes::user;
 use datatypes::source;
 use datatypes::map;
-
 extern crate regex;
 fn main() {
     let sender = user {
