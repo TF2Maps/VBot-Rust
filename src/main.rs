@@ -14,7 +14,8 @@ mod datatypes;
 mod service;
 use service::services;
 mod storage;
-
+use storage::storable;
+use storage::storage_utility;
 
 mod storage_debugger;
 
@@ -32,7 +33,8 @@ mod command_map;
 use command_map::parse_map;
 
 use datatypes::user;
-
+use datatypes::source;
+use datatypes::map;
 
 extern crate regex;
 fn main() {
@@ -42,13 +44,25 @@ fn main() {
                     display_name: "test_ user".to_string() 
                 };
 
-    parse_map("!add oldmap http://url    Hello World".to_string(), sender);
+    
+    let TestMap: map = map {
+        name: "test name".to_string(),
+        url: "test url".to_string(),
+        notes: "test notes".to_string(),
+        uploaded: false,
+        owner: user {
+                id: "01".to_string(),  
+                application: "Discord".to_string(), 
+                display_name: "test_ user".to_string() 
+        },
+    };
     
 	let console: service_console::service_console = service_console::service_console;
     let discord: service_discord::service_discord = service_discord::service_discord;
     
 	let console_storage: storage_debugger::storage_debugger = storage_debugger::storage_debugger{};
-    
+    console_storage.store_object(&TestMap.convert_to_storable());
+    //parse_map("!add oldmap http://url    Hello World".to_string(), sender);
     service_discord::service_discord::send_message("Hello World".to_string(), "".to_string());
 	
     
