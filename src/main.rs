@@ -8,65 +8,68 @@
 // This is the main function
 
 mod Bot;
-mod map_datatypes;
-mod Message_Handle_Responses;
+mod datatypes;
 
 
-mod Service_Adapter;
-mod Storage_Adapter;
+mod service;
+use service::services;
+mod storage;
+use storage::storable;
+use storage::storage_utility;
 
-
-mod Test_Bot;
-mod Console_Storage_Adapter;
-mod Console_Service_Adapter;
-
-use Console_Service_Adapter::Console_Service;
-
-use Service_Adapter::Tick_Outcome;
-use Service_Adapter::Service;
-
-use std::rc;
-
-mod Discord_Service_Adapter;
-use Discord_Service_Adapter::Discord_Service;
-mod map_commands;
-
-use map_commands::ParseMap;
-
+mod storage_debugger;
+use service::tick_outcome;
+mod service_console;
+mod service_discord;
+mod command_map;
+use command_map::parse_map;
+use datatypes::user;
+use datatypes::source;
+use datatypes::map;
 extern crate regex;
 fn main() {
-    ParseMap("!add mapname http://url Hello World".to_string());
+    let sender = user {
+                    id: "01".to_string(),  
+                    application: "Discord".to_string(), 
+                    display_name: "test_ user".to_string() 
+                };
 
-    ParseMap("!add     mapname   http://url    Hello World".to_string());
-     ParseMap("!add     mapname Hello World".to_string());
-    let Console: Console_Service = Console_Service{};
-    let Discord: Discord_Service = Discord_Service{};
-    let console_storage: Console_Storage_Adapter::Console_Storage_Adapter = Console_Storage_Adapter::Console_Storage_Adapter{};
-    Discord_Service.Send_Public_Message("Hello World".to_string(), "".to_string());
-
-
-    let testbot: Bot::Bot = Test_Bot::Get_Test_Bot();
     
-    let Test_Bot_2: Bot::Bot = Bot::Bot {
-        Commands: Vec::new(),
-        TickFunctions: Vec::new(),    
-        StorageFunctions: Box::new(console_storage)
+    let TestMap: map = map {
+        name: "test name".to_string(),
+        url: "test url".to_string(),
+        notes: "test notes".to_string(),
+        uploaded: false,
+        owner: user {
+                id: "01".to_string(),  
+                application: "Discord".to_string(), 
+                display_name: "test_ user".to_string() 
+        },
     };
+    
+	let console: service_console::service_console = service_console::service_console;
+    let discord: service_discord::service_discord = service_discord::service_discord;
+    
+	let console_storage: storage_debugger::storage_debugger = storage_debugger::storage_debugger{};
+    console_storage.store_object(&TestMap.convert_to_storable());
+    println!("{:?}",
+        console_storage.get_stored_data( "config".to_string(), vec!
+        [
+            ("config".to_string(),"Data".to_string())
+        ])
+    );
 
-    let Test_Bot_3: Bot::Bot = Bot::Bot {
-        Commands: Vec::new(),
-        TickFunctions: Vec::new(),    
-        StorageFunctions: Box::new(console_storage)
-    };
-
+    //parse_map("!add oldmap http://url    Hello World".to_string(), sender);
+    service_discord::service_discord::send_message("Hello World".to_string(), "".to_string());
+	
     
     loop {
-        Discord.On_Tick();
-        let action: Tick_Outcome = Console.On_Tick();
+        
+        let action: tick_outcome = service_console::service_console::tick();
         
         match action {
-            Tick_Outcome::DoNothing => println!("Doing Nothing"),
-            Tick_Outcome::Received_Public_Message(source,msg) => println!("{0} said: {1}",source.sender.id.to_string(), msg)
+            tick_outcome::nothing => println!("Doing Nothing"),
+            tick_outcome::message_received(source,msg) => println!("{0} said: {1}",source.sender.id.to_string(), msg)
         }
     }
     
