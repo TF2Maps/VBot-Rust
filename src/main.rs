@@ -52,6 +52,13 @@ fn main() {
     
 	let console_storage: storage_debugger::storage_debugger = storage_debugger::storage_debugger{};
     console_storage.store_object(&TestMap.convert_to_storable());
+    println!("{:?}",
+        console_storage.get_stored_data( "config".to_string(), vec!
+        [
+            ("config".to_string(),"Data".to_string())
+        ])
+    );
+
     //parse_map("!add oldmap http://url    Hello World".to_string(), sender);
     service_discord::service_discord::send_message("Hello World".to_string(), "".to_string());
 	
