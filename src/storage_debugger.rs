@@ -67,6 +67,7 @@ impl storage_utility for storage_debugger {
     }
 
     fn get_stored_data(&self, storage_location: String, primary_keys: Vec<(String, String)>) -> Vec<(String, String)> {
+        println!("STORAGE RETRIEVAL NEEDS TO OUTPUT A RESULT");
         let filepath: String = storage_location.to_string() + ".csv";
         
         let mut file = OpenOptions::new()
@@ -82,19 +83,16 @@ impl storage_utility for storage_debugger {
         let all_keys: Vec<&str> = first_line.split(",").collect();
 
         for line in file_buffer.lines() {
-   
-            
             let l = line.unwrap();
            
-
             let row: Vec<&str> = l.split(",").collect();
-            println!("{:?}", row);
             let mut i = 0;
             let mut found_entry = true;
 
             for x in &primary_keys {
-  
-                if (x.1 == row[i]) {
+                let entry = row[i].to_string();
+                let entry2 = x.1.to_string();
+                if (entry == entry2) {
                 } else {
                     found_entry = false;
                 }
@@ -102,7 +100,6 @@ impl storage_utility for storage_debugger {
             }
             if (found_entry)
             {
-                println!("Found the entry!");
                 let mut returner: Vec<(String,String)> = Vec::new();
                 
                 let mut j = 0;
@@ -110,14 +107,10 @@ impl storage_utility for storage_debugger {
                     returner.push((key.to_string() , row[j].to_string()));
                     j = j + 1;
                 }
-                
-                println!("Returning");
-                println!("{:?}", returner);
                 return returner;
             }
                
         }
-        println!("Found nothing!");
         let returner: Vec<(String, String)> = Vec::new();
         return returner;
     }
