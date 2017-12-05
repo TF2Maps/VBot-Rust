@@ -19,7 +19,7 @@ pub trait storable {
 
 pub trait storage_utility {
     fn store_object(&self, object: &storable_object);
-    fn get_stored_data(&self, storage_location: String, primary_keys: Vec<(String, String)>) -> Vec<(String, String)>;
+    fn get_stored_data(&self, storage_location: String, primary_keys: Vec<(String, String)>) -> HashMap<String, String>;
 
     fn get_object_by_regex(&self, file: String, regex: String) -> String;
     fn get_by_regex_map(&self,regex: String) -> (storage_event_outcome, map);

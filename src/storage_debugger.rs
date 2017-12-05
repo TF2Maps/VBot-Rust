@@ -15,6 +15,9 @@ use storage::*;
 
 use std::io::BufWriter;
 use std::io::BufReader;
+
+use std::collections::HashMap;
+
 #[derive(Debug, Copy, Clone)]
 pub struct storage_debugger {}
 
@@ -66,7 +69,7 @@ impl storage_utility for storage_debugger {
         file.write_all(csv_line.as_bytes());
     }
 
-    fn get_stored_data(&self, storage_location: String, primary_keys: Vec<(String, String)>) -> Vec<(String, String)> {
+    fn get_stored_data(&self, storage_location: String, primary_keys: Vec<(String, String)>) -> HashMap<String, String> {
         println!("STORAGE RETRIEVAL NEEDS TO OUTPUT A RESULT");
         let filepath: String = storage_location.to_string() + ".csv";
         
@@ -100,18 +103,18 @@ impl storage_utility for storage_debugger {
             }
             if (found_entry)
             {
-                let mut returner: Vec<(String,String)> = Vec::new();
-                
+                let mut returner: HashMap<String,String> = HashMap::new();
+                println!("HANDLE NULL AT END");
                 let mut j = 0;
                 for key in &all_keys {
-                    returner.push((key.to_string() , row[j].to_string()));
+                    returner.insert( key.to_string(), row[j].to_string());
                     j = j + 1;
                 }
                 return returner;
             }
                
         }
-        let returner: Vec<(String, String)> = Vec::new();
+        let returner: HashMap<String,String> = HashMap::new();
         return returner;
     }
 

@@ -26,8 +26,16 @@ use command_map::parse_map;
 use datatypes::user;
 use datatypes::source;
 use datatypes::map;
+use std::collections::HashMap;
+
 extern crate regex;
+extern crate reqwest;
+#[macro_use] extern crate hyper;
+use hyper::header::Headers;
+header! { (Authorization, "Authorization") => [String] }
+
 fn main() {
+    service_discord::get_all_channels_in_guild("217585440457228290".to_string());
     let sender = user {
                     id: "01".to_string(),  
                     application: "Discord".to_string(), 
@@ -53,14 +61,24 @@ fn main() {
 	let console_storage: storage_debugger::storage_debugger = storage_debugger::storage_debugger{};
     console_storage.store_object(&TestMap.convert_to_storable());
     println!("{:?}",
-        console_storage.get_stored_data( "config".to_string(), vec!
+        console_storage.get_stored_data( "discord".to_string(), vec!
         [
-            ("config".to_string(),"Data".to_string())
+            ("configID".to_string(), "1".to_string())
         ])
     );
 
-    //parse_map("!add oldmap http://url    Hello World".to_string(), sender);
-    service_discord::service_discord::send_message("Hello World".to_string(), "".to_string());
+    let discord_configuration: HashMap<String, String> = console_storage.get_stored_data
+        ("discord".to_string(), vec![("configID".to_string(), "1".to_string())]);
+    
+    let mut webhook = String::new();
+
+    match discord_configuration.get(&"Chatroom".to_string()) {
+        Some(hook) => {
+            webhook = hook.clone()
+        }
+        None => println!("ERROR")
+    }
+    service_discord::service_discord::send_message("Hello World".to_string(), webhook);
 	
     
     loop {
