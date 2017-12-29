@@ -1,41 +1,44 @@
 use datatypes::user;
 use datatypes::map;
-
+use datatypes::destination;
+use datatypes::source;
 use regex::Regex;
-
-pub fn parse_map (Message: String, owner: user ) {
+use storage::storage_utility;
+pub fn parse_map_commands (Message: String, user: source, storage_system: Box<storage_utility> ){
     println!("");
     println!("For message: {}", &Message);
-    let command_splitter = Regex::new(r"(?:^(!update(?:\s)(\S*))|^!delete|^!add)").unwrap();
-    let command_split = command_splitter.captures(&Message).unwrap();
+    if (Message.starts_with("!add") | Message.starts_with("!update") | Message.starts_with("!delete")) {
 
-    let map_parser = Regex::new(r"(?:(?:\s*)(\S*)(?:\s*))((?:(?:http)\S*)|\b)(?:\s*)(.*)").unwrap();
-    
-    let map_parsed: Vec<&str> = Regex::new(&command_split[0]).unwrap().split(&Message).collect();
+        let command_splitter = Regex::new(r"(?:^(!update(?:\s)(\S*))|^!delete|^!add)").unwrap();
+        let command_split = command_splitter.captures(&Message).unwrap();
 
-    let captures = map_parser.captures(&map_parsed[1]).unwrap();
-    println!("The command is: {}", &command_split[0]);
-    println!("{} That's the Mapname", &captures[1]);
-    println!("{} That's the url", &captures[2]);
-    println!("{} Those are the notes", &captures[3]);
-    
-    let Parsed_Map = map {
-        name: captures[1].to_string(),
-        url: captures[2].to_string(),
-        notes: captures[3].to_string(),
-        uploaded: false,
-        owner: owner
-    };
+        let map_parser = Regex::new(r"(?:(?:\s*)(\S*)(?:\s*))((?:(?:http)\S*)|\b)(?:\s*)(.*)").unwrap();
+        
+        let map_parsed: Vec<&str> = Regex::new(&command_split[0]).unwrap().split(&Message).collect();
 
-    if *(&command_split[0].starts_with("!add")) {
+        let captures = map_parser.captures(&map_parsed[1]).unwrap();
+        println!("The command is: {}", &command_split[0]);
+        println!("{} That's the Mapname", &captures[1]);
+        println!("{} That's the url", &captures[2]);
+        println!("{} Those are the notes", &captures[3]);
+        
+        let Parsed_Map = map {
+            name: captures[1].to_string(),
+            url: captures[2].to_string(),
+            notes: captures[3].to_string(),
+            uploaded: false,
+            owner: user.sender
+        };
+
+        if *(&command_split[0].starts_with("!add")) {
+            //storage_system.store_object(Parsed_Map.convert_to_storable());
+        }
+        if *(&command_split[0].starts_with("!update")) {
+            println!("{} ~There's the old map name", &command_split[2]);
+        }
+        if *(&command_split[0].starts_with("!delete")) {
+            
+
+        }
     }
-    if *(&command_split[0].starts_with("!update")) {
-        println!("{} ~There's the old map name", &command_split[2]);
-    }
-    if *(&command_split[0].starts_with("!delete")) {
-    }
-
-    
-
-
 } 

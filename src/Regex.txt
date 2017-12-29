@@ -5,4 +5,8 @@
 (?:(?:(?:(?:http)[^\s]*))(.*)) Get everything after http:// (Group 1) -> Parse Notes
 
 
+(content|username|id|channel_id)": "((?:\\"|[^"])*) <- Get Content out of JSON 
+
+
+
 

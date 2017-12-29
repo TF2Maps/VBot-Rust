@@ -3,6 +3,7 @@ use datatypes::source;
 pub trait services {
     
     fn send_message(message: String, desination: String ) -> activity_outcome;
+    fn check_if_admin(id: String) -> bool;
     fn initialise() -> activity_outcome;
     fn tick() -> tick_outcome;
 }

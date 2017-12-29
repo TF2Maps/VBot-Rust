@@ -9,7 +9,6 @@ pub struct user {
     pub display_name: String 
 }
 
-
 impl storable for user {
     fn convert_to_storable(self) -> storable_object {
         let mut primarykeys: Vec<(String, String)> = Vec::new();
@@ -50,6 +49,7 @@ impl storable for map {
         return converted_object;
     }    
 }
+
 pub struct source {
     pub sender: user,
     pub chatroom: String,   
@@ -68,8 +68,6 @@ pub struct destination {
     pub chatroom: String,
     pub application: String, 
 }
-
-
 
 enum request {
     add (map),

@@ -1,11 +1,3 @@
-Map name,Url,Notes,Uploaded,ID,Application,
-test name,test url,test notes,false,01,Discord,
-test name,test url,test notes,false,01,Discord,
-test name,test url,test notes,false,01,Discord,
-test name,test url,test notes,false,01,Discord,
-test name,test url,test notes,false,01,Discord,
-test name,test url,test notes,false,01,Discord,
-test name,test url,test notes,false,01,Discord,
-test name,test url,test notes,false,01,Discord,
-test name,test url,test notes,false,01,Discord,
-test name,test url,test notes,false,01,Discord,
+Map name,Url,Notes,Uploaded,ID,Application
+test name22,test url,test notes,FALSE,1,Discord
+test name 2,test url,test notes,FALSE,1,Discord

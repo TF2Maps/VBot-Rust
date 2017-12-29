@@ -22,6 +22,9 @@ impl services for service_console
         println!("Initialising console service");
         return activity_outcome::success;
     }
+    fn check_if_admin(id: String) -> bool {
+        return false;
+    }
     fn tick() -> tick_outcome {
         let stdin = io::stdin();
 		
