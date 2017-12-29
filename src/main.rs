@@ -53,6 +53,7 @@ fn main() {
         ;
 
     begin_discord_loop();
+    
     /*
     let url: String = "https://www.google.com.au/search?hl=en&source=hp&ei=RF8iWvnfDMaB8gXKj5d4&q=trigger+site%3Adeveloper.valvesoftware.com".to_string();
     let output: String = Get_And_Splice(url.to_string(),"url?q=".to_string(),"&amp".to_string());

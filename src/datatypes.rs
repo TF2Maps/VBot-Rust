@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use storage::storable_object;
 use storage::storable;
 
-
+#[derive(Debug, Clone)]
 pub struct user {
     pub id: String,  
     pub application: String, 
@@ -49,7 +49,7 @@ impl storable for map {
         return converted_object;
     }    
 }
-
+#[derive(Debug, Clone)]
 pub struct source {
     pub sender: user,
     pub chatroom: String,   

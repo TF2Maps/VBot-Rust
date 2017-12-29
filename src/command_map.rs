@@ -3,6 +3,7 @@ use datatypes::map;
 use datatypes::destination;
 use datatypes::source;
 use regex::Regex;
+use storage::storable;
 use storage::storage_utility;
 pub fn parse_map_commands (Message: String, user: source, storage_system: Box<storage_utility> ){
     println!("");
@@ -29,16 +30,24 @@ pub fn parse_map_commands (Message: String, user: source, storage_system: Box<st
             uploaded: false,
             owner: user.sender
         };
-
+        let storable_map = &Parsed_Map.convert_to_storable();
+        
         if *(&command_split[0].starts_with("!add")) {
+            (*storage_system).store_object(storable_map);
             //storage_system.store_object(Parsed_Map.convert_to_storable());
         }
-        if *(&command_split[0].starts_with("!update")) {
+        else if *(&command_split[0].starts_with("!update")) {
             println!("{} ~There's the old map name", &command_split[2]);
+            println!("Updating not implemented yet");
+            //(*storage_system).store_object(storable_map);
         }
-        if *(&command_split[0].starts_with("!delete")) {
-            
+        else if *(&command_split[0].starts_with("!delete")) {
+            (*storage_system).delete_stored_data(storable_map.storage_location.clone() , storable_map.primary_keys.clone());
 
         }
     }
+    else if (Message.starts_with("!maps")) {
+        println!("{}", (*storage_system).get_object_by_regex("Maps.csv".to_string(), "".to_string()));
+        
+    } 
 } 

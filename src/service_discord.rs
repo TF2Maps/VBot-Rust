@@ -21,8 +21,10 @@ use std::io::Read;
 use reqwest::Url;
 use reqwest::header;
 use reqwest::header::UserAgent;
+use storage_debugger::storage_debugger;
 use serde_json::{Value, Error};
 use File;
+use command_map::parse_map_commands;
 pub struct service_discord;
 use std::collections::HashMap;
 
@@ -194,12 +196,19 @@ pub fn discord_loop (mut h: HashMap<String, String>) {
         let mut channel_messages = get_discord_messages(channelID.to_string(), ["/messages?after=", LastMsgID].join(""));
         all_messages.append(&mut channel_messages);
     }
-   
+    //Goes wrong way round
     for x in &all_messages {
         h.insert(x.0.chatroom.clone(), x.2.clone());
 
         let mut isadmin: bool = false;
-       
+
+        let sender = user {
+            id: x.0.sender.id.to_string(),  
+            application: "Discord".to_string(), 
+            display_name: x.0.sender.display_name.to_string() 
+        };
+        let console_storage= Box::new(storage_debugger{});
+        parse_map_commands(x.1.clone(), x.0.clone() ,console_storage);
         println!("{} ({}): {}", x.0.sender.display_name, x.0.sender.id, x.1);
         
     }

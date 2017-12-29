@@ -81,7 +81,6 @@ impl storage_utility for storage_debugger {
                 Header_line = Header_line + &keyitem.0 + ",";
                 csv_line = csv_line + &keyitem.1 + ",";
             }
-
             self.store_object(&item.1);
         }
 
@@ -196,6 +195,7 @@ impl storage_utility for storage_debugger {
 
     fn get_by_regex_source(&self, regex: String) -> (storage_event_outcome, source) {
         println!("Getting source by Regex");
+        
         let test_user: user = user {
             id: "01".to_string(),
             application: "Discord".to_string(),
