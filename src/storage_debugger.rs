@@ -18,6 +18,7 @@ use std::io::BufReader;
 use std::fs::File;
 use std::io::prelude::*;
 use std::collections::HashMap;
+use regex::Regex;
 #[derive(Debug, Copy, Clone)]
 pub struct storage_debugger {}
 fn get_not_matching_lines(storage_location: String, primary_keys: Vec<(String, String)>) -> String {
@@ -115,22 +116,20 @@ impl storage_utility for storage_debugger {
         newfile.write_all(newstring.as_bytes()).expect("hi");
     }
    
-    fn get_stored_data(&self, storage_location: String, primary_keys: Vec<(String, String)>) -> HashMap<String, String> {
+    fn get_stored_data(&self, storage_location: String, primary_keys: HashMap<String, Regex>) -> Vec<HashMap<String, String>> {
         println!("STORAGE RETRIEVAL NEEDS TO OUTPUT A RESULT");
         let filepath: String = storage_location.to_string() + ".csv";
         
-        let mut file = OpenOptions::new()
-            .read(true)
+        let mut file = OpenOptions::new().read(true)
             .open(filepath)
             .expect("Write permissions are not enabled!");
         
         let mut file_buffer = BufReader::new(&file);
-        
         let mut first_line = String::new();
         file_buffer.read_line(&mut first_line);
         
         let all_keys: Vec<&str> = first_line.split(",").collect();
-
+        let mut returner: Vec<HashMap<String,String>> = Vec::new(); //HashMap::new();
         for line in file_buffer.lines() {
             let l = line.unwrap();
            
@@ -141,33 +140,23 @@ impl storage_utility for storage_debugger {
             for x in &primary_keys {
                 let entry = row[i].to_string();
                 let entry2 = x.1.to_string();
-                if (entry == entry2) {
-                } else {
-                    found_entry = false;
-                }
+                found_entry = x.1.is_match(&entry);
                 i = i + 1;
             }
-            if (found_entry)
-            {
-                let mut returner: HashMap<String,String> = HashMap::new();
+
+            if (found_entry) {
                 println!("HANDLE NULL AT END");
                 let mut j = 0;
+                let mut entry : HashMap<String,String> = HashMap::new();
                 for key in &all_keys {
-                    returner.insert( key.to_string(), row[j].to_string());
+                    
+                    entry.insert(key.to_string(), row[j].to_string());
                     j = j + 1;
                 }
-                return returner;
+                returner.push(entry);
             }
-               
         }
-        let returner: HashMap<String,String> = HashMap::new();
         return returner;
-    }
-
-
-
-    fn get_object_by_regex(&self, file: String, regex: String) -> String {
-        return "HELLO WORLD".to_string();
     }
 
 

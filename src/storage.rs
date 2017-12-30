@@ -4,6 +4,7 @@ use datatypes::destination;
 use datatypes::map;
 use std::collections::HashMap;
 use std::vec;
+use regex::Regex;
 
 //Class used to Group relevant Storage Functions together 
 pub struct storable_object {
@@ -19,9 +20,8 @@ pub trait storable {
 
 pub trait storage_utility {
     fn store_object(&self, object: &storable_object);
-    fn get_stored_data(&self, storage_location: String, primary_keys: Vec<(String, String)>) -> HashMap<String, String>;
-    fn delete_stored_data(&self, storage_location: String, primary_keys: Vec<(String, String)>) ; 
-    fn get_object_by_regex(&self, file: String, regex: String) -> String;
+    fn get_stored_data(&self, storage_location: String, primary_keys: HashMap<String, Regex>) -> Vec<HashMap<String, String>>;
+    fn delete_stored_data(&self, storage_location: String, primary_keys: Vec<(String, String)>); 
     fn get_by_regex_map(&self,regex: String) -> (storage_event_outcome, map);
     fn get_by_regex_source(&self,regex: String) -> (storage_event_outcome, source); 
 }

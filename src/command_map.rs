@@ -5,6 +5,7 @@ use datatypes::source;
 use regex::Regex;
 use storage::storable;
 use storage::storage_utility;
+use std::collections::HashMap;
 pub fn parse_map_commands (Message: String, user: source, storage_system: Box<storage_utility> ){
     println!("");
     println!("For message: {}", &Message);
@@ -47,7 +48,11 @@ pub fn parse_map_commands (Message: String, user: source, storage_system: Box<st
         }
     }
     else if (Message.starts_with("!maps")) {
-        println!("{}", (*storage_system).get_object_by_regex("Maps.csv".to_string(), "".to_string()));
-        
+
+        let searches: HashMap<String, Regex> = [
+            ("Map name".to_string() , Regex::new(".*").unwrap())
+        ].iter().cloned().collect();
+        println!("{:?}",(*storage_system).get_stored_data("Maps".to_string(), searches));
+        //println!("{}", (*storage_system).get_object_by_regex("Maps.csv".to_string(), "".to_string()));
     } 
 } 
