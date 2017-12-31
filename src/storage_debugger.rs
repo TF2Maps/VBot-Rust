@@ -19,6 +19,7 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::collections::HashMap;
 use regex::Regex;
+
 #[derive(Debug, Copy, Clone)]
 pub struct storage_debugger {}
 fn get_not_matching_lines(storage_location: String, primary_keys: Vec<(String, String)>) -> String {
@@ -62,20 +63,21 @@ fn get_not_matching_lines(storage_location: String, primary_keys: Vec<(String, S
     }
     return NewFile;
 }
+
+//Bit tedious and should get cut down significantly
+//However time is better spent getting a DB setup
 impl storage_utility for storage_debugger {
-    fn store_object(&self, object: &storable_object) {
-        let mut csv_line: String = "\n".to_string();
+    fn store_object(&self, object: &storable_object) -> &str {
+        let mut csv_line: String = "".to_string();
         let mut Header_line: String = "".to_string();
 
         for item in &object.primary_keys {
             Header_line = Header_line + &item.0 + ",";
             csv_line = csv_line + &item.1 + ",";
-            println!("{}: \"{}\"", &item.0, &item.1);
         }
         for item in &object.values {
             Header_line = Header_line + &item.0 + ",";
             csv_line = csv_line + &item.1 + ",";
-            println!("{}: \"{}\"", &item.0, &item.1);
         }
         for item in &object.foreign_keys {
             for keyitem in &item.1.primary_keys {
@@ -84,6 +86,8 @@ impl storage_utility for storage_debugger {
             }
             self.store_object(&item.1);
         }
+        Header_line.pop(); //Remove trailing ,
+        csv_line.pop();
 
         let filepath: String = object.storage_location.to_string() + ".csv";
         let mut FirstWrite = OpenOptions::new()
@@ -91,8 +95,9 @@ impl storage_utility for storage_debugger {
             .write(true)
             .create(true)
             .open(filepath)
-            .expect("Write permissions are not enabled!");
-
+            .unwrap();
+            //.unwrap_or(return "error");
+       
         FirstWrite.write_all(Header_line.as_bytes());
 
         let filepath: String = object.storage_location.to_string() + ".csv";
@@ -102,11 +107,14 @@ impl storage_utility for storage_debugger {
             .append(true)
             .create(true)
             .open(filepath)
-            .expect("Write permissions are not enabled!");
+            .unwrap();
+            //.unwrap_or(return "An internal error has occured");
+            //.expect("Unable to access file for writing!");
 
         println!("SANATISATION NEEDS TO BE ENABLED FOR THE CSV MODULE");
 
-        file.write_all(csv_line.as_bytes());
+        file.write_all(csv_line.as_bytes()).expect("Error when writing all data!");
+        return "Your map has been added!";
     }
 
     fn delete_stored_data(&self, storage_location: String, primary_keys: Vec<(String, String)>) {

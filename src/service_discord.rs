@@ -177,7 +177,8 @@ pub fn begin_discord_loop () {
     let output: String = Get_And_Splice(url.to_string(),"url?q=".to_string(),"&amp".to_string());
   
 
-    let guild = "217585440457228290";
+    //let guild = "217585440457228290";
+    let guild = "223211233149583361";
     let all_channels: Vec<String> = get_all_channels_in_guild(guild);
     
     let mut all_channels_and_last_message: HashMap<String, String> = HashMap::new();
@@ -208,7 +209,7 @@ pub fn discord_loop (mut h: HashMap<String, String>) {
             display_name: x.0.sender.display_name.to_string() 
         };
         let console_storage= Box::new(storage_debugger{});
-        parse_map_commands(x.1.clone(), x.0.clone() ,console_storage);
+        println!("{}", parse_map_commands(x.1.clone(), x.0.clone() ,console_storage));
         println!("{} ({}): {}", x.0.sender.display_name, x.0.sender.id, x.1);
         
     }

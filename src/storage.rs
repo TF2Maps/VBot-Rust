@@ -17,9 +17,11 @@ pub struct storable_object {
 pub trait storable {
         fn convert_to_storable(self) -> storable_object;        
 } 
-
+pub enum SaveErrorReason {
+    KeyAlreadyExists, IOError, FileNotFound
+}
 pub trait storage_utility {
-    fn store_object(&self, object: &storable_object);
+    fn store_object(&self, object: &storable_object) ->  &str;
     fn get_stored_data(&self, storage_location: String, primary_keys: HashMap<String, Regex>) -> Vec<HashMap<String, String>>;
     fn delete_stored_data(&self, storage_location: String, primary_keys: Vec<(String, String)>); 
     fn get_by_regex_map(&self,regex: String) -> (storage_event_outcome, map);
