@@ -27,6 +27,7 @@ use File;
 use command_map::parse_map_commands;
 pub struct service_discord;
 use std::collections::HashMap;
+use storage_utility;
 
 pub fn Get_And_Splice(url: String, start: String, end: String) -> String {
     let mut resp = reqwest::get(&url);
@@ -172,7 +173,10 @@ pub fn get_all_channels_in_guild (Guild_id: &str) -> Vec<String> {
         }
         return channels;
 }
-pub fn begin_discord_loop () {
+pub fn begin_discord_loop (
+Commands: Vec<fn( msg: String, user: source, storage_system: storage_utility) -> Vec<(destination , String)>> , 
+Storage_Handler: Box<storage_utility> )   
+{
     let url: String = "https://www.google.com.au/search?hl=en&source=hp&ei=RF8iWvnfDMaB8gXKj5d4&q=trigger+site%3Adeveloper.valvesoftware.com".to_string();
     let output: String = Get_And_Splice(url.to_string(),"url?q=".to_string(),"&amp".to_string());
   
@@ -186,11 +190,14 @@ pub fn begin_discord_loop () {
     for x in &all_channels {
         all_channels_and_last_message.insert(x.to_string(),discord_get_latest_message_id(x.to_string()));
     }
-    discord_loop(all_channels_and_last_message);
+    discord_loop(all_channels_and_last_message, Commands, Storage_Handler);
 }
 
-pub fn discord_loop (mut h: HashMap<String, String>) {
-    
+pub fn discord_loop (
+mut h: HashMap<String, String>,
+Commands: Vec<fn( msg: String, user: source, storage_system: storage_utility) -> Vec<(destination , String)>> , 
+Storage_Handler: Box<storage_utility> ) 
+{    
     let mut all_messages: Vec<(source, String, String)> = Vec::new();
     
     for (channelID, LastMsgID) in &h {
@@ -209,11 +216,11 @@ pub fn discord_loop (mut h: HashMap<String, String>) {
             display_name: x.0.sender.display_name.to_string() 
         };
         let console_storage= Box::new(storage_debugger{});
-        println!("{}", parse_map_commands(x.1.clone(), x.0.clone() ,console_storage));
-        println!("{} ({}): {}", x.0.sender.display_name, x.0.sender.id, x.1);
-        
+        for command in &Commands {
+            command(x.1.clone(), x.0.clone() , *Storage_Handler);
+        }
     }
-    discord_loop(h);
+    discord_loop(h, Commands, Storage_Handler);
 
 }
 impl services for service_discord
