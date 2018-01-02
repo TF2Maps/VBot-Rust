@@ -24,7 +24,6 @@ use reqwest::header::UserAgent;
 use storage_debugger::storage_debugger;
 use serde_json::{Value, Error};
 use File;
-use command_map::parse_map_commands;
 pub struct service_discord;
 use std::collections::HashMap;
 use storage_utility;
@@ -55,7 +54,7 @@ pub fn get_token () -> String {
     return contents;
 }
 pub fn get_page_content(url: String) -> String{
-        let binded: String = url; //["https://discordapp.com/api/v6/guilds/".to_string() , channel_id.to_string()].join("");
+        let binded: String = url;
         
         let url: reqwest::Url = reqwest::Url::parse(&binded).expect("Failed to Post Message");;
 
@@ -174,8 +173,8 @@ pub fn get_all_channels_in_guild (Guild_id: &str) -> Vec<String> {
         return channels;
 }
 pub fn begin_discord_loop (
-Commands: Vec<fn( msg: String, user: source, storage_system: storage_utility) -> Vec<(destination , String)>> , 
-Storage_Handler: Box<storage_utility> )   
+Commands: Vec<fn( msg: String, user: source, storage_system: &Box<storage_utility>) -> Vec<(destination , String)>> , 
+Storage_Handler: &Box<storage_utility> )   
 {
     let url: String = "https://www.google.com.au/search?hl=en&source=hp&ei=RF8iWvnfDMaB8gXKj5d4&q=trigger+site%3Adeveloper.valvesoftware.com".to_string();
     let output: String = Get_And_Splice(url.to_string(),"url?q=".to_string(),"&amp".to_string());
@@ -195,8 +194,8 @@ Storage_Handler: Box<storage_utility> )
 
 pub fn discord_loop (
 mut h: HashMap<String, String>,
-Commands: Vec<fn( msg: String, user: source, storage_system: storage_utility) -> Vec<(destination , String)>> , 
-Storage_Handler: Box<storage_utility> ) 
+Commands: Vec<fn( msg: String, user: source, storage_system: &Box<storage_utility>) -> Vec<(destination , String)>> , 
+Storage_Handler: &Box<storage_utility> ) 
 {    
     let mut all_messages: Vec<(source, String, String)> = Vec::new();
     
@@ -215,9 +214,12 @@ Storage_Handler: Box<storage_utility> )
             application: "Discord".to_string(), 
             display_name: x.0.sender.display_name.to_string() 
         };
-        let console_storage= Box::new(storage_debugger{});
+
         for command in &Commands {
-            command(x.1.clone(), x.0.clone() , *Storage_Handler);
+            let responses: Vec<(destination , String)> = command(x.1.clone(), x.0.clone() , Storage_Handler);
+            for msg in &responses {
+                println!("{}", msg.1);
+            }
         }
     }
     discord_loop(h, Commands, Storage_Handler);

@@ -35,6 +35,10 @@ use service_discord::discord_get_latest_message_id;
 use service_discord::begin_discord_loop;
 use std::fs::File;
 use std::io::prelude::*;
+use command_map::delete_command;
+use command_map::add_command;
+use command_map::retrieve_maps_command;
+use datatypes::destination;
 extern crate serde_json;
 extern crate regex;
 extern crate reqwest;
@@ -44,15 +48,10 @@ header! { (Authorization, "Authorization") => [String] }
 
 fn main() {
     let console_storage: storage_debugger::storage_debugger = storage_debugger::storage_debugger{};
-    console_storage.delete_stored_data(
-         
-            "Maps".to_string(), 
-            vec![
-                ("Map name".to_string(), "test name".to_string())
-            ])
-        ;
-
-    begin_discord_loop();
+    
+    let commands: Vec<fn(String, source, &Box<storage_utility> ) -> Vec<(destination , String)>> =  vec![add_command,retrieve_maps_command, delete_command];
+    let cont: Box<storage_utility> = Box::new(console_storage);
+    begin_discord_loop(commands, &cont);
     
     /*
     let url: String = "https://www.google.com.au/search?hl=en&source=hp&ei=RF8iWvnfDMaB8gXKj5d4&q=trigger+site%3Adeveloper.valvesoftware.com".to_string();

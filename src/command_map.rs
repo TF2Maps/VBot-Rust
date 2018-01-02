@@ -6,11 +6,9 @@ use regex::Regex;
 use storage::storable;
 use storage::storage_utility;
 use std::collections::HashMap;
-pub fn parse_map_commands (Message: String, user: source, storage_system: Box<storage_utility> ) -> String {
-    println!("");
-    println!("For message: {}", &Message);
-    if (Message.starts_with("!add") | Message.starts_with("!update") | Message.starts_with("!delete")) {
+use storage::storable_object;
 
+fn get_map_from_message (Message: String, user: source) -> Option<storable_object> {
         let command_splitter = Regex::new(r"(?:^(!update(?:\s)(\S*))|^!delete|^!add)").unwrap();
         let command_split = command_splitter.captures(&Message).unwrap();
 
@@ -18,7 +16,7 @@ pub fn parse_map_commands (Message: String, user: source, storage_system: Box<st
         
         let map_parsed: Vec<&str> = Regex::new(&command_split[0]).unwrap().split(&Message).collect();
         if (map_parsed.len() < 2){
-            return "No captures found :(".to_string();
+            return None;
         }
 
         let captures = map_parser.captures(&map_parsed[1]).unwrap();
@@ -30,27 +28,56 @@ pub fn parse_map_commands (Message: String, user: source, storage_system: Box<st
             uploaded: false,
             owner:    user.sender
         };
+        return Some(Parsed_Map.convert_to_storable());
+}
 
-        let storable_map = &Parsed_Map.convert_to_storable();
+pub fn add_command (Message: String, user: source, storage_system: &Box<storage_utility> ) -> Vec<(destination , String)> {
+    let mut responses: Vec<(destination , String)> = Vec::new();
+    
+    if Message.starts_with("!add") {
+            let destination = destination {
+            chatroom: user.chatroom.clone(), 
+            application: user.sender.application.clone()
+        };
+        let storable_map = get_map_from_message(Message, user);
         
-        if *(&command_split[0].starts_with("!add")) {
-            return (*storage_system).store_object(storable_map).to_string();
-        }
-        else if *(&command_split[0].starts_with("!update")) {
-        }
-        else if *(&command_split[0].starts_with("!delete")) {
-            (*storage_system).delete_stored_data(storable_map.storage_location.clone() , storable_map.primary_keys.clone());
+
+
+        match storable_map {
+            Some(expr) =>  responses.push((destination, ((*storage_system).store_object(&expr).to_string()))),
+            None => return responses
         }
     }
-    else if (Message.starts_with("!maps")) {
+    return responses;
+}
 
+pub fn delete_command (Message: String, user: source, storage_system: &Box<storage_utility> ) -> Vec<(destination , String)> {
+    let mut responses: Vec<(destination , String)> = Vec::new();
+    if Message.starts_with("!delete") {
+        let destination = destination {
+            chatroom: user.chatroom.clone(), 
+            application: user.sender.application.clone()
+        };
+        let storable_map = get_map_from_message(Message, user);
+        let mut map_success = String::new();
+
+        match storable_map {
+            Some(expr) =>  responses.push((destination, (*storage_system).delete_stored_data(expr.storage_location.clone() , expr.primary_keys.clone()))),
+            None => return responses
+        }
+    }
+    return responses;
+}
+
+pub fn retrieve_maps_command (Message: String, user: source, storage_system: &Box<storage_utility> ) -> Vec<(destination , String)> {
+    let mut public_response: String = String::new();
+    if Message.starts_with("!maps") {
         let searches: HashMap<String, Regex> = [
             ("Map name".to_string() , Regex::new(".*").unwrap())
         ].iter().cloned().collect();
       
         let allmaps = (*storage_system).get_stored_data("Maps".to_string(), searches);
         
-        let mut public_response: String = String::new();
         let mut i = 0;
         for map in &allmaps {
             let mapname: &str = &(String::from(map["Map name"].clone()));
@@ -72,8 +99,13 @@ pub fn parse_map_commands (Message: String, user: source, storage_system: Box<st
             public_response.push_str("\n");
             i = i + 1;
         }
-        println!("{}", public_response);
-    } 
-    
-    return "done it".to_string();
-} 
+        let destination = destination {
+            chatroom: user.chatroom, 
+            application: user.sender.application
+        };
+        let mut responses = Vec::new();
+        responses.push((destination, public_response));
+        return responses;
+    }
+    return Vec::new();
+}

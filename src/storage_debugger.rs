@@ -117,11 +117,12 @@ impl storage_utility for storage_debugger {
         return "Your map has been added!";
     }
 
-    fn delete_stored_data(&self, storage_location: String, primary_keys: Vec<(String, String)>) {
+    fn delete_stored_data(&self, storage_location: String, primary_keys: Vec<(String, String)>) -> String{
         let newstring = get_not_matching_lines(storage_location.clone(), primary_keys);
 
-        let mut newfile = File::create(storage_location.to_string() + ".csv").expect("hi");
-        newfile.write_all(newstring.as_bytes()).expect("hi");
+        let mut newfile = File::create(storage_location.to_string() + ".csv").expect("Error Occured");
+        newfile.write_all(newstring.as_bytes()).expect("Error Occured");
+        return "The map has been deleted".to_string()
     }
    
     fn get_stored_data(&self, storage_location: String, primary_keys: HashMap<String, Regex>) -> Vec<HashMap<String, String>> {
