@@ -49,12 +49,49 @@ impl storable for map {
         return converted_object;
     }    
 }
+impl storable for discord_chatroom {
+    fn convert_to_storable(self) -> storable_object {
+        let mut primarykeys: Vec<(String, String)> = Vec::new();
+        primarykeys.push(("ChannelID".to_string(), self.chatroom_id));
+
+        let mut values: Vec<(String, String)> = Vec::new();
+        values.push(("Webhook".to_string(), self.webhook));
+        values.push(("Admins".to_string(), self.admin_groups.join("-")));
+
+        let mut foreign_keys: Vec<(String, storable_object)> = Vec::new();
+
+        let converted_object: storable_object = storable_object {
+            storage_location: "Discord_Config".to_string(),
+            primary_keys: primarykeys,
+            values: values,
+            foreign_keys: foreign_keys,
+        };
+        return converted_object;
+    }    
+}
+
+#[derive(Debug, Clone, Hash)]
+pub struct discord_chatroom {
+    pub chatroom_id: String,
+    pub webhook: String,   
+    pub admin_groups: Vec<String> 
+    
+}
+impl PartialEq for discord_chatroom {
+    fn eq(&self, other: &discord_chatroom) -> bool {
+        self.chatroom_id == other.chatroom_id
+    }
+}
+impl Eq for discord_chatroom{}
+
 #[derive(Debug, Clone)]
 pub struct source {
     pub sender: user,
     pub chatroom: String,   
     pub elevated_perms: bool 
 }
+
+
 
 pub struct map {
     pub name: String,

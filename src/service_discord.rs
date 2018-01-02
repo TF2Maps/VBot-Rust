@@ -1,6 +1,6 @@
 
 use serde_json;
-
+use datatypes::discord_chatroom;
 use datatypes::user;
 use datatypes::source;
 use datatypes::destination;
@@ -152,6 +152,36 @@ pub fn get_user_roles (guild_id: &str, user_id: &str) -> Vec<String>{
         }
         return roles;
 }
+
+pub fn get_all_discord_channels (storage_system: &Box<storage_utility>) -> Vec<discord_chatroom> {
+    let searches: HashMap<String, Regex> = [
+            ("ChannelID".to_string() , Regex::new(".*").unwrap())
+        ].iter().cloned().collect();
+    let All_Channels = (*storage_system).get_stored_data("Discord_Config".to_string(),searches);
+    let mut All_discord_Channels: Vec<discord_chatroom> = Vec::new();
+    
+    for channel in All_Channels {
+        let mut admins: Vec<&str> = Vec::new();
+        if (channel.contains_key("Admins")) {
+            admins = channel["Admins"].split("-").collect();
+        }
+        
+        let mut all_admins = Vec::new();
+        for admin in admins {
+            all_admins.push(admin.to_string());
+        }
+
+        let chatroom = discord_chatroom {
+            chatroom_id: channel["ChannelID"].clone(),
+            webhook: channel["Webhook"].clone(),
+            admin_groups: all_admins,
+        };
+
+        All_discord_Channels.push(chatroom);
+    }
+    return All_discord_Channels;
+
+}
 pub fn get_all_channels_in_guild (Guild_id: &str) -> Vec<String> {
         let binded: String = ["https://discordapp.com/api/v6/guilds/".to_string() , Guild_id.to_string() , "/channels".to_string()].join("");
         let mut content = get_page_content(binded);
@@ -182,30 +212,50 @@ Storage_Handler: &Box<storage_utility> )
 
     //let guild = "217585440457228290";
     let guild = "223211233149583361";
-    let all_channels: Vec<String> = get_all_channels_in_guild(guild);
+    let all_channels: Vec<discord_chatroom> = get_all_discord_channels(Storage_Handler);
     
-    let mut all_channels_and_last_message: HashMap<String, String> = HashMap::new();
+    let mut all_channels_and_last_message: HashMap<discord_chatroom, String> = HashMap::new();
     
-    for x in &all_channels {
-        all_channels_and_last_message.insert(x.to_string(),discord_get_latest_message_id(x.to_string()));
+    for x in all_channels {
+        let id = x.chatroom_id.to_string();
+        all_channels_and_last_message.insert(x, discord_get_latest_message_id(id));
     }
+
     discord_loop(all_channels_and_last_message, Commands, Storage_Handler);
 }
+fn send_message(message: String, desination: String ){
+
+		let params = [("content", &message)];
+        let client = reqwest::Client::new();
+        let res = client.post(&desination)
+            .form(&params)
+            .send().expect("Failed to Post Message");
+        println!("Sending: {0} to {1}", message, desination);
+    }
 
 pub fn discord_loop (
-mut h: HashMap<String, String>,
+mut h: HashMap<discord_chatroom, String>,
 Commands: Vec<fn( msg: String, user: source, storage_system: &Box<storage_utility>) -> Vec<(destination , String)>> , 
 Storage_Handler: &Box<storage_utility> ) 
 {    
     let mut all_messages: Vec<(source, String, String)> = Vec::new();
     
-    for (channelID, LastMsgID) in &h {
-        let mut channel_messages = get_discord_messages(channelID.to_string(), ["/messages?after=", LastMsgID].join(""));
+    for (channel, LastMsgID) in &h {
+        let mut channel_messages = get_discord_messages(channel.chatroom_id.clone(), ["/messages?after=", LastMsgID].join(""));
         all_messages.append(&mut channel_messages);
+        
     }
     //Goes wrong way round
     for x in &all_messages {
-        h.insert(x.0.chatroom.clone(), x.2.clone());
+
+        let mut chatroom: discord_chatroom;
+        let mut new_pairs: HashMap<discord_chatroom, String> = h.clone();
+        for (channel, lastmessage) in new_pairs {
+            if channel.chatroom_id == x.0.chatroom.to_string(){
+                chatroom = channel;
+                h.insert(chatroom,x.2.to_string());
+            }
+        }
 
         let mut isadmin: bool = false;
 
@@ -218,6 +268,12 @@ Storage_Handler: &Box<storage_utility> )
         for command in &Commands {
             let responses: Vec<(destination , String)> = command(x.1.clone(), x.0.clone() , Storage_Handler);
             for msg in &responses {
+                let mut new_pairs1: HashMap<discord_chatroom, String> = h.clone();
+                for (channel, lastmessage) in new_pairs1 {
+                    if channel.chatroom_id == x.0.chatroom.to_string(){
+                        send_message(msg.1.to_string(),channel.webhook.to_string());
+                    }
+                }
                 println!("{}", msg.1);
             }
         }
