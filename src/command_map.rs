@@ -41,8 +41,6 @@ pub fn add_command (Message: String, user: source, storage_system: &Box<storage_
         };
         let storable_map = get_map_from_message(Message, user);
         
-
-
         match storable_map {
             Some(expr) =>  responses.push((destination, ((*storage_system).store_object(&expr).to_string()))),
             None => return responses
@@ -59,7 +57,6 @@ pub fn delete_command (Message: String, user: source, storage_system: &Box<stora
             application: user.sender.application.clone()
         };
         let storable_map = get_map_from_message(Message, user);
-        let mut map_success = String::new();
 
         match storable_map {
             Some(expr) =>  responses.push((destination, (*storage_system).delete_stored_data(expr.storage_location.clone() , expr.primary_keys.clone()))),
