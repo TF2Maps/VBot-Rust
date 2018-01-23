@@ -47,27 +47,41 @@ pub fn Get_And_Splice(url: String, start: String, end: String) -> String {
     let vec2 = secondsplit.collect::<Vec<&str>>();
     return vec2[0].to_string();
 }
-pub fn get_token () -> String {
-    let mut file = File::open("discord_token.txt").unwrap();
-    let mut contents = String::new();
-    file.read_to_string(&mut contents);
+pub fn get_token () -> Result<String> {
+    let mut file = File::open("discord_token.txt");
+     let mut contents = String::new();
+    match file {
+        Ok(x) => file.read_to_string(&mut contents),
+        None => return Err("Couldn't open file")
+    }
     return contents;
 }
-pub fn get_page_content(url: String) -> String{
+
+pub fn get_page_content(url: String , token: String) -> Result<String>{
+    
         let binded: String = url;
-        
-        let url: reqwest::Url = reqwest::Url::parse(&binded).expect("Failed to Post Message");;
-
         let client = reqwest::Client::new();
-        let params = [("Authorization", ["Bot " , &get_token()].join(""))];
+        let params = [("Authorization", ["Bot " , &token].join(""))];
         let mut headers = reqwest::header::Headers::new();
+        
+        let url: Result<reqwest::Url, ParseError> = reqwest::Url::parse(&binded);
+        headers.set(reqwest::header::Authorization( ["Bot ", &token].join("")));
 
-        headers.set(reqwest::header::Authorization( ["Bot ", &get_token()].join("")));
+       
+        let mut resp;
 
-        let mut resp = client.get(url).headers(headers).send().expect("Failed to Post Message");
+        match url {
+            Ok(x) => resp = client.get(url).headers(headers).send(),
+            Err(x) => return Err(),
+        }
+
         let mut content = String::new();
-		resp.read_to_string(&mut content);
-        return content;
+        
+        match resp {
+            Ok(x) => x.read_to_string(&mut content),
+            Err(x) => return Err(),
+        }
+        return Ok(content);
 }
 
 pub fn get_roles_that_are_admin (channel_id: &str) -> Vec<String> {
