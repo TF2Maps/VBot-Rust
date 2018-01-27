@@ -59,7 +59,15 @@ pub fn delete_command (Message: String, user: source, storage_system: &Box<stora
         let storable_map = get_map_from_message(Message, user);
 
         match storable_map {
-            Some(expr) =>  responses.push((destination, (*storage_system).delete_stored_data(expr.storage_location.clone() , expr.primary_keys.clone()))),
+
+            Some(expr) =>  {
+                match (*storage_system).delete_stored_data(expr.storage_location.clone(), expr.primary_keys.clone()) 
+                {
+                    Ok(delete_result) => responses.push((destination,delete_result)),
+                    Err(x) => {},
+                }
+                
+            },
             None => return responses
         }
     }

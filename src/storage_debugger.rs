@@ -22,46 +22,55 @@ use regex::Regex;
 
 #[derive(Debug, Copy, Clone)]
 pub struct storage_debugger {}
-fn get_not_matching_lines(storage_location: String, primary_keys: Vec<(String, String)>) -> String {
+fn get_not_matching_lines(storage_location: String, primary_keys: Vec<(String, String)>) -> Result<String,String> {
     println!("STORAGE RETRIEVAL NEEDS TO OUTPUT A RESULT");
     let filepath: String = storage_location.to_string() + ".csv";
     
     let mut file = OpenOptions::new()
         .read(true)
-        .open(filepath)
-        .expect("Write permissions are not enabled!");
-    
-    let mut file_buffer = BufReader::new(&file);
-    
-    let mut first_line = String::new();
-    file_buffer.read_line(&mut first_line);
-    
-    let all_keys: Vec<&str> = first_line.split(",").collect();
-    
-    let mut NewFile: String = first_line.clone();
-    for line in file_buffer.lines() {
-        let l = line.unwrap();
-        
-        let row: Vec<&str> = l.split(",").collect();
-        let mut i = 0;
-        let mut found_entry = true;
+        .open(filepath);
+    match file {
+        Err(x) => return Err("An error occured".to_string()),
+        Ok(x) => {
+            let mut file_buffer = BufReader::new(&x);
+            
+            let mut first_line = String::new();
+            file_buffer.read_line(&mut first_line);
+            
+            let all_keys: Vec<&str> = first_line.split(",").collect();
+            
+            let mut NewFile: String = first_line.clone();
+            for line in file_buffer.lines() {
+                match line {
+                    Err(x) => {},
+                    Ok(l) => {
+                        let row: Vec<&str> = l.split(",").collect();
+                        let mut i = 0;
+                        let mut found_entry = true;
 
-        for x in &primary_keys {
-            let entry = row[i].to_string();
-            let entry2 = x.1.to_string();
-            if (entry == entry2) {
-            } else {
-                NewFile.push_str(&l);
-                NewFile.push_str(&"\n");
-                found_entry = false;
+                        for x in &primary_keys {
+                            let entry = row[i].to_string();
+                            let entry2 = x.1.to_string();
+                            if (entry == entry2) {
+                            } else {
+                                NewFile.push_str(&l);
+                                NewFile.push_str(&"\n");
+                                found_entry = false;
+                            }
+                            i = i + 1;
+                        }
+                        if (found_entry == false)
+                        {
+                        }
+                    }
+                }
             }
-            i = i + 1;
+            return Ok(NewFile);
         }
-        if (found_entry == false)
-        {
-        }
+        Err(x) => return Err("An error occured".to_string())
     }
-    return NewFile;
+
+    
 }
 
 //Bit tedious and should get cut down significantly
@@ -90,79 +99,104 @@ impl storage_utility for storage_debugger {
         csv_line.pop();
 
         let filepath: String = object.storage_location.to_string() + ".csv";
+        
         let mut FirstWrite = OpenOptions::new()
             .read(true)
             .write(true)
             .create(true)
-            .open(filepath)
-            .unwrap();
-            //.unwrap_or(return "error");
-       
-        FirstWrite.write_all(Header_line.as_bytes());
-
+            .open(filepath);
+        match (FirstWrite){
+            Err(x) => {},
+            Ok(mut x) => {
+                x.write_all(Header_line.as_bytes());
+            }
+        }
+           
         let filepath: String = object.storage_location.to_string() + ".csv";
         let mut file = OpenOptions::new()
             .read(true)
             .write(true)
             .append(true)
             .create(true)
-            .open(filepath)
-            .unwrap();
-            //.unwrap_or(return "An internal error has occured");
-            //.expect("Unable to access file for writing!");
+            .open(filepath);
+        match file {
+            Err(x) => {},
+            Ok(mut x) => {
+                x.write_all(csv_line.as_bytes());
+            },
+        }
 
         println!("SANATISATION NEEDS TO BE ENABLED FOR THE CSV MODULE");
 
-        file.write_all(csv_line.as_bytes()).expect("Error when writing all data!");
         return "Your map has been added!";
     }
 
-    fn delete_stored_data(&self, storage_location: String, primary_keys: Vec<(String, String)>) -> String{
+    fn delete_stored_data(&self, storage_location: String, primary_keys: Vec<(String, String)>) -> Result<String,String>{
         let newstring = get_not_matching_lines(storage_location.clone(), primary_keys);
 
-        let mut newfile = File::create(storage_location.to_string() + ".csv").expect("Error Occured");
-        newfile.write_all(newstring.as_bytes()).expect("Error Occured");
-        return "The map has been deleted".to_string()
+        match File::create(storage_location.to_string() + ".csv"){
+            Err(x) => {},
+            Ok(mut file) => {
+                match newstring {
+                    Err(x) => return Err("An erorr occure".to_string()),
+                    Ok(x) => {
+                        file.write_all(x.as_bytes());
+                        return Ok("The map has been deleted".to_string())
+                    }
+                }
+                
+                
+            }
+        }
+        return Err("An error has occured".to_string());
     }
    
     fn get_stored_data(&self, storage_location: String, primary_keys: HashMap<String, Regex>) -> Vec<HashMap<String, String>> {
         println!("STORAGE RETRIEVAL NEEDS TO OUTPUT A RESULT");
         let filepath: String = storage_location.to_string() + ".csv";
-        
+        let mut returner: Vec<HashMap<String,String>> = Vec::new(); 
         let mut file = OpenOptions::new().read(true)
-            .open(filepath)
-            .expect("Write permissions are not enabled!");
-        
-        let mut file_buffer = BufReader::new(&file);
-        let mut first_line = String::new();
-        file_buffer.read_line(&mut first_line);
-        
-        let all_keys: Vec<&str> = first_line.split(",").collect();
-        let mut returner: Vec<HashMap<String,String>> = Vec::new(); //HashMap::new();
-        for line in file_buffer.lines() {
-            let l = line.unwrap();
-           
-            let row: Vec<&str> = l.split(",").collect();
-            let mut i = 0;
-            let mut found_entry = true;
+            .open(filepath.clone());
 
-            for x in &primary_keys {
-                let entry = row[i].to_string();
-                let entry2 = x.1.to_string();
-                found_entry = x.1.is_match(&entry);
-                i = i + 1;
-            }
+        match OpenOptions::new().read(true).open(filepath){
+            Err(x) => {},
+        
+            Ok(x) => {
+                let mut file_buffer = BufReader::new(&x);
+                let mut first_line = String::new();
+                file_buffer.read_line(&mut first_line);
+                
+                let all_keys: Vec<&str> = first_line.split(",").collect();
+                
+                for line in file_buffer.lines() {
+                    match line {
+                        Err(x) => {},
+                        Ok(l) => {
+                            let row: Vec<&str> = l.split(",").collect();
+                            let mut i = 0;
+                            let mut found_entry = true;
 
-            if (found_entry) {
-                println!("HANDLE NULL AT END");
-                let mut j = 0;
-                let mut entry : HashMap<String,String> = HashMap::new();
-                for key in &all_keys {
-                    
-                    entry.insert(key.to_string(), row[j].to_string());
-                    j = j + 1;
+                            for x in &primary_keys {
+                                let entry = row[i].to_string();
+                                let entry2 = x.1.to_string();
+                                found_entry = x.1.is_match(&entry);
+                                i = i + 1;
+                            }
+
+                            if (found_entry) {
+                                println!("HANDLE NULL AT END");
+                                let mut j = 0;
+                                let mut entry : HashMap<String,String> = HashMap::new();
+                                for key in &all_keys {
+                                    
+                                    entry.insert(key.to_string(), row[j].to_string());
+                                    j = j + 1;
+                                }
+                                returner.push(entry);
+                            }
+                       },
+                    }
                 }
-                returner.push(entry);
             }
         }
         return returner;
@@ -204,8 +238,7 @@ impl storage_utility for storage_debugger {
             chatroom: "01".to_string(),
             elevated_perms: true,
         };
-        let tuple: (storage_event_outcome, source) =
-            (storage_event_outcome::completed_successfully, test_source);
+        let tuple: (storage_event_outcome, source) = (storage_event_outcome::completed_successfully, test_source);
         return tuple;
     }
 }

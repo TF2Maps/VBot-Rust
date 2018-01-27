@@ -25,7 +25,7 @@ pub enum SaveErrorReason {
 pub trait storage_utility {
     fn store_object(&self, object: &storable_object) ->  &str;
     fn get_stored_data(&self, storage_location: String, primary_keys: HashMap<String, Regex>) -> Vec<HashMap<String, String>>;
-    fn delete_stored_data(&self, storage_location: String, primary_keys: Vec<(String, String)>) -> String; 
+    fn delete_stored_data(&self, storage_location: String, primary_keys: Vec<(String, String)>) -> Result<String,String>; 
     fn get_by_regex_map(&self,regex: String) -> (storage_event_outcome, map);
     fn get_by_regex_source(&self,regex: String) -> (storage_event_outcome, source); 
 }

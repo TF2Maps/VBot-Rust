@@ -14,9 +14,9 @@ pub struct service_console;
 
 impl services for service_console 
 {
-    fn send_message(message: String, desination: String ) -> activity_outcome {
+    fn send_message(message: String, desination: String ) -> Result<String,String> {
         println!("Sending: {0} to {1}", message, desination);
-        return activity_outcome::success;
+        return Ok("Sent".to_string());
     }
     fn initialise () -> activity_outcome {
         println!("Initialising console service");
@@ -31,7 +31,12 @@ impl services for service_console
         let mut Message: String = "".to_string();
             
         for line in stdin.lock().lines() {
-            Message.push_str(&line.unwrap());
+            match line {
+                Err(x) => {},
+                Ok(l) => {
+                    Message.push_str(&l);
+                }
+            }
             break;
         }
 
